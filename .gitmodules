@@ -1,0 +1,3 @@
+[submodule "dccboxed-signing-tool"]
+	path = dccboxed-signing-tool
+	url = https://github.com/SmartDCCInnovation/dccboxed-signing-tool.git

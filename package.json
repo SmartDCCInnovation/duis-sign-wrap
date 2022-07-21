@@ -1,0 +1,56 @@
+{
+  "name": "@smrtdcc/duis-sign-wrap",
+  "version": "0.0.1",
+  "description": "Wrapper library for signing/validating DUIS",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SmartDCCInnovation/duis-sign-wrap.git"
+  },
+  "author": {
+    "name": "Karim Kanso",
+    "email": "Karim.Kanso@smartdcc.co.uk"
+  },
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/SmartDCCInnovation/duis-sign-wrap/issues"
+  },
+  "homepage": "https://github.com/SmartDCCInnovation/duis-sign-wrap#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "cpy-cli": "^4.1.0",
+    "del-cli": "^5.0.0",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "glob": "^8.0.3",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.7",
+    "typescript": "^4.7.4"
+  },
+  "scripts": {
+    "pretest": "npm run build:jar",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "prebuild": "del dist",
+    "build": "tsc",
+    "build:jar": "mvn -f dccboxed-signing-tool/pom.xml package -Dmaven.test.skip=true",
+    "prepack:jar": "npm run build:jar",
+    "pack:jar": "cpy ./dccboxed-signing-tool/target/xmldsig\\*jar dist/ --rename=tool.jar",
+    "prepack": "npm run build && npm run pack:jar"
+  }
+}
