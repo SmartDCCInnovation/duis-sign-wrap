@@ -1,5 +1,5 @@
 {
-  "name": "@smrtdcc/duis-sign-wrap",
+  "name": "@smartdcc/duis-sign-wrap",
   "version": "0.0.2",
   "description": "Wrapper library for signing/validating DUIS",
   "main": "dist/index.js",
