@@ -1,6 +1,6 @@
 {
   "name": "@smrtdcc/duis-sign-wrap",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Wrapper library for signing/validating DUIS",
   "main": "dist/index.js",
   "type": "commonjs",
