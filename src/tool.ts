@@ -19,6 +19,7 @@
 
 import { resolve } from 'path'
 import { spawn } from 'node:child_process'
+import { ChildProcessWithoutNullStreams } from 'child_process'
 
 const jarFile = resolve(__dirname, 'tool.jar')
 
@@ -60,12 +61,18 @@ export function runTool(options: ToolOptions): Promise<string> {
       throw new Error('invalid mode')
     }
 
-    const cp = spawn(options.java ?? 'java', [
-      '-cp',
-      options.jarFile ?? jarFile,
-      `${options.package ?? 'uk.co.smartdcc.boxed.xmldsig'}.${mode}`,
-      '-',
-    ])
+    let cp: ChildProcessWithoutNullStreams
+    try {
+      cp = spawn(options.java ?? 'java', [
+        '-cp',
+        options.jarFile ?? jarFile,
+        `${options.package ?? 'uk.co.smartdcc.boxed.xmldsig'}.${mode}`,
+        '-',
+      ])
+    } catch (e) {
+      reject(e)
+      return
+    }
     let stdoutBuffer = Buffer.alloc(0)
     let stderrBuffer = Buffer.alloc(0)
     cp.stdout.on('data', (chunk: Buffer) => {
@@ -100,6 +107,9 @@ export function runTool(options: ToolOptions): Promise<string> {
         )
       }
       reject(new Error('unknown exit code\n' + stderrBuffer.toString('utf-8')))
+    })
+    cp.stdin.on('error', () => {
+      /* empty, masks EPIPE when java executable does not exist */
     })
     if (Buffer.isBuffer(options.xml)) {
       cp.stdin.end(options.xml, 'utf-8')
