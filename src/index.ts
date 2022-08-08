@@ -26,6 +26,11 @@ export interface SignOptions {
   xml: string | Buffer
 
   /**
+   * Preserve counter value in RequestID when signing
+   */
+  preserveCounter?: boolean
+
+  /**
    * Override the location of the xmldsig jar file, used for testing.
    */
   jarFile?: string

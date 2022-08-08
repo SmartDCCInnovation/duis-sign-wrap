@@ -92,6 +92,21 @@ describe('tool', () => {
     )
   })
 
+  test('string-input-preserveCounter', () => {
+    return readFile(
+      resolve(__dirname, 'data', '8.2_READ_INVENTORY_REQUEST_DUIS.XML')
+    ).then((b) =>
+      expect(
+        tool.runTool({
+          xml: b.toString('utf-8'),
+          mode: 'sign',
+          jarFile,
+          preserveCounter: true,
+        })
+      ).resolves.toMatch(/90-B3-D5-1F-30-01-00-00:90-B3-D5-1F-30-00-00-02:1000/)
+    )
+  })
+
   test('validate', () => {
     return readFile(
       resolve(__dirname, 'data', 'readfw-version-response.xml')

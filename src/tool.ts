@@ -35,6 +35,11 @@ export interface ToolOptions {
   mode: 'sign' | 'validate'
 
   /**
+   * Preserve counter value in RequestID when signing
+   */
+  preserveCounter?: boolean
+
+  /**
    * Override the location of the xmldsig jar file, used for testing.
    */
   jarFile?: string
@@ -53,8 +58,12 @@ export interface ToolOptions {
 export function runTool(options: ToolOptions): Promise<string> {
   return new Promise((resolve, reject) => {
     let mode: string
+    const additionalOptions: string[] = []
     if (options.mode === 'sign') {
       mode = 'Sign'
+      if (options.preserveCounter) {
+        additionalOptions.push('--preserveCounter')
+      }
     } else if (options.mode === 'validate') {
       mode = 'Validate'
     } else {
@@ -63,12 +72,15 @@ export function runTool(options: ToolOptions): Promise<string> {
 
     let cp: ChildProcessWithoutNullStreams
     try {
-      cp = spawn(options.java ?? 'java', [
-        '-cp',
-        options.jarFile ?? jarFile,
-        `${options.package ?? 'uk.co.smartdcc.boxed.xmldsig'}.${mode}`,
-        '-',
-      ])
+      cp = spawn(
+        options.java ?? 'java',
+        [
+          '-cp',
+          options.jarFile ?? jarFile,
+          `${options.package ?? 'uk.co.smartdcc.boxed.xmldsig'}.${mode}`,
+          '-',
+        ].concat(additionalOptions)
+      )
     } catch (e) {
       reject(e)
       return
