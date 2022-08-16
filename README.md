@@ -9,8 +9,6 @@ and error handling.
 
 Developed using typescript with `node 16`.
 
-TODO
-
 ### Sign DUIS
 
 Below is a minimal example of how to use the library:
@@ -52,7 +50,7 @@ const data =  parseDuis(validateDuis(duisSigned))
 
 ## Other Info
 
-Copyright 2022, Smart DCC Limited, All rights reserved. Project is licensed under GLPv3.
+Copyright 2022, Smart DCC Limited, All rights reserved. Project is licensed under GPLv3.
 
 
 [duis]: https://smartenergycodecompany.co.uk/the-smart-energy-code-2/ "Smart Energy Code"
