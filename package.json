@@ -51,6 +51,8 @@
     "build:jar": "mvn -f dccboxed-signing-tool/pom.xml package -Dmaven.test.skip=true",
     "prepack:jar": "npm run build:jar",
     "pack:jar": "cpy ./dccboxed-signing-tool/target/xmldsig\\*jar dist/ --rename=tool.jar",
-    "prepack": "npm run build && npm run pack:jar"
+    "prepack": "npm run build && npm run pack:jar",
+    "lint": "eslint src/",
+    "prettier-check": "prettier -c  \"src/**/*.{css,html,ts,json,md,yaml,yml}\""
   }
 }
