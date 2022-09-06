@@ -1,6 +1,6 @@
 {
   "name": "@smartdcc/duis-sign-wrap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Wrapper library for signing/validating DUIS",
   "main": "dist/index.js",
   "type": "commonjs",
