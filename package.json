@@ -54,5 +54,15 @@
     "prepack": "npm run build && npm run pack:jar",
     "lint": "eslint src/",
     "prettier-check": "prettier -c  \"src/**/*.{css,html,ts,json,md,yaml,yml}\""
-  }
+  },
+  "keywords": [
+    "duis",
+    "backend",
+    "smartdcc",
+    "smartmeter",
+    "smets2",
+    "xml",
+    "xmldsig",
+    "xsd"
+  ]
 }
