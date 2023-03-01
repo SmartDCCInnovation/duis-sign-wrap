@@ -1,13 +1,13 @@
 import * as tool from '../src/tool'
 import { readFile } from 'node:fs/promises'
-import { glob } from 'glob'
+import { globSync } from 'glob'
 import { resolve } from 'node:path'
 
 describe('tool', () => {
   let jarFile: string
 
   beforeAll(() => {
-    const paths = glob.sync(`dccboxed-signing-tool/target/xmldsig-1*.jar`)
+    const paths = globSync(`dccboxed-signing-tool/target/xmldsig-1*.jar`)
     if (paths.length !== 1) {
       throw new Error('too many versions of xmldsig found to test')
     }
