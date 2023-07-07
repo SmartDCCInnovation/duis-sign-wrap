@@ -79,7 +79,7 @@ export function runTool(options: ToolOptions): Promise<string> {
           options.jarFile ?? jarFile,
           `${options.package ?? 'uk.co.smartdcc.boxed.xmldsig'}.${mode}`,
           '-',
-        ].concat(additionalOptions)
+        ].concat(additionalOptions),
       )
     } catch (e) {
       reject(e)
@@ -100,22 +100,22 @@ export function runTool(options: ToolOptions): Promise<string> {
       } else if (code === 1 /* generic environment error */) {
         return reject(
           new Error(
-            'generic environment error\n' + stderrBuffer.toString('utf-8')
-          )
+            'generic environment error\n' + stderrBuffer.toString('utf-8'),
+          ),
         )
       } else if (code === 2 /* generic application error */) {
         return reject(
           new Error(
-            'generic application error\n' + stderrBuffer.toString('utf-8')
-          )
+            'generic application error\n' + stderrBuffer.toString('utf-8'),
+          ),
         )
       } else if (code === 3 /* missing key material */) {
         return reject(
-          new Error('missing credentials\n' + stderrBuffer.toString('utf-8'))
+          new Error('missing credentials\n' + stderrBuffer.toString('utf-8')),
         )
       } else if (code === 10 /* validation error */) {
         return reject(
-          new Error('validation failed\n' + stderrBuffer.toString('utf-8'))
+          new Error('validation failed\n' + stderrBuffer.toString('utf-8')),
         )
       }
       reject(new Error('unknown exit code\n' + stderrBuffer.toString('utf-8')))
