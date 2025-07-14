@@ -28,7 +28,7 @@
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
     "@types/glob": "^8.0.0",
-    "@types/jest": "^29.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.13",
     "cpy-cli": "^5.0.0",
     "del-cli": "^6.0.0",
