@@ -25,7 +25,7 @@ From Debian/Ubuntu an appropriate JRE can be installed with:
 sudo apt install openjdk-11-jre
 ```
 
-Developed and tested against `node 16`. Install from `npm`:
+Developed and tested against `node 24`. Install from `npm`:
 
 ```
 npm i @smartdcc/duis-sign-wrap
