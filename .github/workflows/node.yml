@@ -1,5 +1,9 @@
 name: Tests
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     branches:
@@ -170,7 +174,5 @@ jobs:
         tag: ${{ github.ref }}
         overwrite: true
         body: "Release ${{ github.ref_name }}"
-    - uses: JS-DevTools/npm-publish@v4
-      with:
-        token: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        access: public
+    - name: Publish to NPM
+      run: npm publish
