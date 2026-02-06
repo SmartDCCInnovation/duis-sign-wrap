@@ -7,7 +7,7 @@ describe('tool', () => {
   let jarFile: string
 
   beforeAll(() => {
-    const paths = globSync(`dccboxed-signing-tool/target/xmldsig-1*.jar`)
+    const paths = globSync(`dccboxed-signing-tool/target/xmldsig-2*.jar`)
     if (paths.length !== 1) {
       throw new Error('too many versions of xmldsig found to test')
     }

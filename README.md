@@ -39,7 +39,7 @@ Below is a minimal example of how to use the library:
 import { signDuis } from '@smartdcc/duis-sign-wrap'
 import { readFile } from 'node:fs/promises'
 
-const duisSigned: string = signDuis(await readFile('/path/to/duis/file-without-signature.xml'))
+const duisSigned: string = await signDuis({ xml: await readFile('/path/to/duis/file-without-signature.xml') })
 ```
 
 Providing no exception was raised, the resulting `duisSigned` should be
@@ -53,7 +53,33 @@ signature:
 ```ts
 import { validateDuis } from '@smartdcc/duis-sign-wrap'
 
-const xml: string = validateDuis(duisSigned)
+const xml: string = await validateDuis({ xml: duisSigned })
+```
+
+### HTTP Backend
+
+The library supports using an HTTP backend server for signing and validation, which
+provides increased performance:
+
+```ts
+import { signDuis, validateDuis } from '@smartdcc/duis-sign-wrap'
+
+// Automatically start and manage a local backend server
+const signed = await signDuis({ xml: '<duis/>', backend: true })
+const validated = await validateDuis({ xml: signed, backend: true })
+```
+
+Alternatively, a custom backend server can be provided that conforms the the correct
+API. This is useful when needing to integrate with a bespoke key store. The HTTP API
+is documented within the [SmartDCCInnovation/dccboxed-signing-tool][sign] tool.
+
+```ts
+// Or use a custom backend URL
+const customSigned = await signDuis({
+  xml: '<duis/>',
+  backend: new URL('http://signing-service.example.com/'),
+  headers: { 'Authorization': 'Bearer token' }
+})
 ```
 
 ### Advanced
@@ -66,7 +92,7 @@ error handling would be:
 import { validateDuis } from '@smartdcc/duis-sign-wrap'
 import { parseDuis } from '@smartdcc/duis-parser'
 
-const data =  parseDuis(validateDuis(duisSigned))
+const data = parseDuis(await validateDuis({ xml: duisSigned }))
 ```
 
 ## Contributing

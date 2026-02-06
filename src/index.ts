@@ -1,7 +1,7 @@
 /*
  * Created on Thu Jul 21 2022
  *
- * Copyright (c) 2022 Smart DCC Limited
+ * Copyright (c) 2026 Smart DCC Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { makeSignDuisRequest, makeVerifyDuisRequest } from './server'
 import { runTool } from './tool'
 
 export interface SignOptions {
@@ -31,21 +32,39 @@ export interface SignOptions {
   preserveCounter?: boolean
 
   /**
+   * Http server backend
+   */
+  backend?: boolean | URL
+
+  /**
+   * Http headers to pass to backend
+   */
+  headers?: Record<string, string>
+
+  /**
    * Override the location of the xmldsig jar file, used for testing.
    */
   jarFile?: string
 }
 
 export function signDuis(options: SignOptions): Promise<string> {
-  return runTool({
-    ...options,
-    mode: 'sign',
-  })
+  if (options.backend) {
+    return makeSignDuisRequest({
+      backend: options.backend,
+      xml: options.xml,
+      headers: options.headers,
+    })
+  }
+  return runTool({ ...options, mode: 'sign' })
 }
 
 export function validateDuis(options: SignOptions): Promise<string> {
-  return runTool({
-    ...options,
-    mode: 'validate',
-  })
+  if (options.backend) {
+    return makeVerifyDuisRequest({
+      backend: options.backend,
+      xml: options.xml,
+      headers: options.headers,
+    })
+  }
+  return runTool({ ...options, mode: 'validate' })
 }
