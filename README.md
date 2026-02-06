@@ -9,9 +9,19 @@
 
 Lightweight TypeScript wrapper around
 [SmartDCCInnovation/dccboxed-signing-tool][sign] - which is a tool for signing
-and validating [DUIS][duis] messages. This package `dccboxed-sogning-tool` as a
+and validating [DUIS][duis] messages. This package wraps `dccboxed-signing-tool` as a
 JavaScript package with some additional marshalling and error handling. That is,
-it provides an API to create and validate an appropriately formatted `xmldsig`.  
+it provides an API to create and validate an appropriately formatted `xmldsig`.
+
+## Table of Contents
+
+- [Usage](#usage)
+  - [Sign DUIS](#sign-duis)
+  - [Validate](#validate)
+  - [HTTP Backend](#http-backend)
+  - [Advanced](#advanced)
+- [API Options](#api-options)
+- [Contributing](#contributing)
 
 ## Usage
 
@@ -58,8 +68,9 @@ const xml: string = await validateDuis({ xml: duisSigned })
 
 ### HTTP Backend
 
-The library supports using an HTTP backend server for signing and validation, which
-provides increased performance:
+The library supports using an HTTP backend server for signing and validation,
+which provides increased performance for multiple operations by reusing the same
+Java process.
 
 ```ts
 import { signDuis, validateDuis } from '@smartdcc/duis-sign-wrap'
@@ -69,7 +80,7 @@ const signed = await signDuis({ xml: '<duis/>', backend: true })
 const validated = await validateDuis({ xml: signed, backend: true })
 ```
 
-Alternatively, a custom backend server can be provided that conforms the the correct
+Alternatively, a custom backend server can be provided that conforms to the correct
 API. This is useful when needing to integrate with a bespoke key store. The HTTP API
 is documented within the [SmartDCCInnovation/dccboxed-signing-tool][sign] tool.
 
@@ -95,12 +106,36 @@ import { parseDuis } from '@smartdcc/duis-parser'
 const data = parseDuis(await validateDuis({ xml: duisSigned }))
 ```
 
+## API Options
+
+Both `signDuis` and `validateDuis` accept an options object with the following properties:
+
+- `xml` (string | Buffer, required): The DUIS XML content to sign or validate
+- `backend` (boolean | URL, optional): Use HTTP backend for improved performance
+  - `true`: Automatically start and manage a local backend server
+  - `URL`: Use a custom backend server at the specified URL
+- `headers` (Record<string, string>, optional): Custom HTTP headers when using backend mode
+- `preserveCounter` (boolean, optional, sign only): Preserve counter value in RequestID when signing
+
+### Error Handling
+
+```ts
+import { signDuis } from '@smartdcc/duis-sign-wrap'
+
+try {
+  const signed = await signDuis({ xml: '<invalid/>', backend: true })
+} catch (error) {
+  console.error('Signing failed:', error.message)
+  // Handle validation errors, missing credentials, etc.
+}
+```
+
 ## Contributing
 
 Contributions are welcome!
 
 Remember, when developing it is required to install a JDK (to build the
-`dccboxed-siging-tool`) and update submodules. To build the JAR file, run the
+`dccboxed-signing-tool`) and update submodules. To build the JAR file, run the
 following command: `npm run build:jar`.
 
 When submitting a pull request, please ensure:
@@ -119,7 +154,7 @@ Any contributions will be expected to be licensable under GPLv3.
 
 ## Other Info
 
-Copyright 2022, Smart DCC Limited, All rights reserved. Project is licensed under GPLv3.
+Copyright 2026, Smart DCC Limited, All rights reserved. Project is licensed under GPLv3.
 
 
 [duis]: https://smartenergycodecompany.co.uk/the-smart-energy-code-2/ "Smart Energy Code"
