@@ -29,7 +29,7 @@
     "@tsconfig/node20": "^20.1.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.13",
-    "cpy-cli": "^6.0.0",
+    "cpy-cli": "^7.0.0",
     "del-cli": "^7.0.0",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^10.0.1",
