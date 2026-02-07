@@ -19,9 +19,10 @@
 
 import { resolve } from 'path'
 import { ChildProcess, spawn } from 'node:child_process'
+import { Socket } from 'node:net'
 
 const jarFile = resolve(__dirname, 'tool.jar')
-const port = Math.round(Math.random() * 16384) + 32768
+export const port = Math.round(Math.random() * 16384) + 32768
 
 let child: ChildProcess | undefined
 
@@ -45,8 +46,35 @@ export async function startBackend(): Promise<void> {
     },
   )
 
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, 350)
+  let ctr = 0
+  do {
+    if (ctr > 10) {
+      child?.kill()
+      throw new Error('timeout waiting for server to start')
+    }
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 50)
+    })
+
+    if (child.exitCode !== null) {
+      throw new Error('server failed to start')
+    }
+
+    ctr++
+  } while ((await checkPort(port)) === false)
+}
+
+export function checkPort(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = new Socket()
+    socket.setTimeout(100)
+    socket.connect(port, '127.0.0.1', () => {
+      socket.end()
+      resolve(true)
+    })
+    socket.on('error', () => {
+      resolve(false)
+    })
   })
 }
 
