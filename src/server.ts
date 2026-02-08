@@ -127,7 +127,7 @@ export async function makeRequest(
     message: Buffer.from(options.xml).toString('base64'),
   }
   if (typeof options.preserveCounter === 'boolean') {
-    body.preserveCounter = true
+    body.preserveCounter = options.preserveCounter
   }
   const response = await fetch(url, {
     method: 'POST',

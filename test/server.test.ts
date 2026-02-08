@@ -289,7 +289,7 @@ describe('makeRequest', () => {
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
-        body: JSON.stringify({ message: Buffer.from('<xml/>').toString('base64'), preserveCounter: true }),
+        body: JSON.stringify({ message: Buffer.from('<xml/>').toString('base64'), preserveCounter: false }),
       })
     )
   })
