@@ -188,7 +188,7 @@ export async function makeVerifyDuisRequest(
     await startBackend()
   }
 
-  return makeRequest(buildUrl(options.backend, 'sign'), {
+  return makeRequest(buildUrl(options.backend, 'verify'), {
     xml: options.xml,
     headers: options.headers,
   })

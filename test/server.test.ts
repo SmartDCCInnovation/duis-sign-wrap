@@ -385,6 +385,10 @@ describe('makeSignDuisRequest', () => {
     await makeSignDuisRequest({ xml: '<xml/>', backend: true })
 
     expect(mockSpawn).toHaveBeenCalled()
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.objectContaining({ href: `http://localhost:${port}/sign` }),
+      expect.any(Object)
+    )
   })
 
   test('uses custom backend URL', async () => {
@@ -451,6 +455,10 @@ describe('makeVerifyDuisRequest', () => {
     await makeVerifyDuisRequest({ xml: '<xml/>', backend: true })
 
     expect(mockSpawn).toHaveBeenCalled()
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.objectContaining({ href: `http://localhost:${port}/verify` }),
+      expect.any(Object)
+    )
   })
 
   test('uses custom backend URL', async () => {
