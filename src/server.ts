@@ -97,6 +97,11 @@ export interface HttpOptions {
   xml: string | Buffer
 
   /**
+   * Preserve counter value in RequestID when signing
+   */
+  preserveCounter?: boolean
+
+  /**
    * Http server backend, set to true to automatically manage a server instance
    */
   backend: true | URL
@@ -116,16 +121,21 @@ export function buildUrl(backend: true | URL, mode: 'sign' | 'verify'): URL {
 
 export async function makeRequest(
   url: URL,
-  xml: string | Buffer,
-  headers?: Record<string, string>,
+  options: Omit<HttpOptions, 'backend'>,
 ): Promise<string> {
+  const body: { message: string; preserveCounter?: boolean } = {
+    message: Buffer.from(options.xml).toString('base64'),
+  }
+  if (typeof options.preserveCounter === 'boolean') {
+    body.preserveCounter = true
+  }
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(headers ?? {}),
+      ...(options.headers ?? {}),
     },
-    body: JSON.stringify({ message: Buffer.from(xml).toString('base64') }),
+    body: JSON.stringify(body),
   })
   if (response.status !== 200) {
     const error = (await response.json()) as {
@@ -157,11 +167,11 @@ export async function makeSignDuisRequest(
     await startBackend()
   }
 
-  return makeRequest(
-    buildUrl(options.backend, 'sign'),
-    options.xml,
-    options.headers,
-  )
+  return makeRequest(buildUrl(options.backend, 'sign'), {
+    xml: options.xml,
+    preserveCounter: options.preserveCounter,
+    headers: options.headers,
+  })
 }
 
 /**
@@ -178,9 +188,8 @@ export async function makeVerifyDuisRequest(
     await startBackend()
   }
 
-  return makeRequest(
-    buildUrl(options.backend, 'sign'),
-    options.xml,
-    options.headers,
-  )
+  return makeRequest(buildUrl(options.backend, 'sign'), {
+    xml: options.xml,
+    headers: options.headers,
+  })
 }

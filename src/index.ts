@@ -49,22 +49,14 @@ export interface SignOptions {
 
 export function signDuis(options: SignOptions): Promise<string> {
   if (options.backend) {
-    return makeSignDuisRequest({
-      backend: options.backend,
-      xml: options.xml,
-      headers: options.headers,
-    })
+    return makeSignDuisRequest({ ...options, backend: options.backend })
   }
   return runTool({ ...options, mode: 'sign' })
 }
 
 export function validateDuis(options: SignOptions): Promise<string> {
   if (options.backend) {
-    return makeVerifyDuisRequest({
-      backend: options.backend,
-      xml: options.xml,
-      headers: options.headers,
-    })
+    return makeVerifyDuisRequest({ ...options, backend: options.backend })
   }
   return runTool({ ...options, mode: 'validate' })
 }

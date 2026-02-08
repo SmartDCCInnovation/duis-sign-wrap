@@ -235,7 +235,7 @@ describe('makeRequest', () => {
       json: async () => ({ message: Buffer.from('<xml/>').toString('base64') }),
     })
 
-    await makeRequest(new URL('http://localhost/sign'), '<test/>')
+    await makeRequest(new URL('http://localhost/sign'), { xml: '<test/>' })
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(URL),
@@ -252,12 +252,60 @@ describe('makeRequest', () => {
       json: async () => ({ message: 'dGVzdA==' }),
     })
 
-    await makeRequest(new URL('http://localhost/sign'), '<xml/>', { 'X-Custom': 'value' })
+    await makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>', headers: { 'X-Custom': 'value' } })
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
         headers: expect.objectContaining({ 'X-Custom': 'value' }),
+      })
+    )
+  })
+
+  test('includes preserveCounter when true', async () => {
+    mockFetch.mockResolvedValue({
+      status: 200,
+      json: async () => ({ message: 'dGVzdA==' }),
+    })
+
+    await makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>', preserveCounter: true })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        body: JSON.stringify({ message: Buffer.from('<xml/>').toString('base64'), preserveCounter: true }),
+      })
+    )
+  })
+
+  test('includes preserveCounter when false', async () => {
+    mockFetch.mockResolvedValue({
+      status: 200,
+      json: async () => ({ message: 'dGVzdA==' }),
+    })
+
+    await makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>', preserveCounter: false })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        body: JSON.stringify({ message: Buffer.from('<xml/>').toString('base64'), preserveCounter: true }),
+      })
+    )
+  })
+
+  test('excludes preserveCounter when not a boolean', async () => {
+    mockFetch.mockResolvedValue({
+      status: 200,
+      json: async () => ({ message: 'dGVzdA==' }),
+    })
+
+    await makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>', preserveCounter: 0 as unknown as boolean })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        body: JSON.stringify({ message: Buffer.from('<xml/>').toString('base64') }),
       })
     )
   })
@@ -269,7 +317,7 @@ describe('makeRequest', () => {
       json: async () => ({ message: Buffer.from(xmlContent).toString('base64') }),
     })
 
-    const result = await makeRequest(new URL('http://localhost/sign'), '<xml/>')
+    const result = await makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>' })
 
     expect(result).toBe(xmlContent)
   })
@@ -280,7 +328,7 @@ describe('makeRequest', () => {
       json: async () => ({ errorCode: 'VALIDATION_ERROR', error: 'Invalid XML' }),
     })
 
-    await expect(makeRequest(new URL('http://localhost/sign'), '<xml/>'))
+    await expect(makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>' }))
       .rejects.toThrow('VALIDATION_ERROR')
   })
 
@@ -290,7 +338,7 @@ describe('makeRequest', () => {
       json: async () => ({}),
     })
 
-    await expect(makeRequest(new URL('http://localhost/sign'), '<xml/>'))
+    await expect(makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>' }))
       .rejects.toThrow('HTTP 500')
   })
 
@@ -300,7 +348,7 @@ describe('makeRequest', () => {
       json: async () => ({}),
     })
 
-    await expect(makeRequest(new URL('http://localhost/sign'), '<xml/>'))
+    await expect(makeRequest(new URL('http://localhost/sign'), { xml: '<xml/>' }))
       .rejects.toThrow('invalid response')
   })
 })
