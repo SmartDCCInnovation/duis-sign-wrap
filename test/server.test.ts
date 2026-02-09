@@ -1,6 +1,7 @@
-import { startBackend, stopBackend, buildUrl, makeRequest, makeSignDuisRequest, makeVerifyDuisRequest, checkPort, port } from '../src/server'
+import { startBackend, stopBackend, buildUrl, makeRequest, makeSignDuisRequest, makeVerifyDuisRequest, checkPort, port, setLogger } from '../src/server'
 import { ChildProcess } from 'node:child_process'
 import { createServer, Server } from 'node:net'
+import { EventEmitter } from 'node:events'
 
 jest.mock('node:child_process', () => ({
   spawn: jest.fn(),
@@ -37,7 +38,7 @@ describe('startBackend', () => {
     expect(mockSpawn).toHaveBeenCalledWith(
       'java',
       expect.arrayContaining(['-cp', expect.stringContaining('tool.jar'), 'uk.co.smartdcc.boxed.xmldsig.Server', '-p', expect.any(String)]),
-      { stdio: ['ignore', 'inherit', 'inherit'] }
+      { stdio: ['ignore', 'inherit', 'pipe'] }
     )
   })
 
@@ -119,6 +120,49 @@ describe('startBackend', () => {
 
     await expect(startBackend()).rejects.toThrow('timeout waiting for server to start')
     expect(mockChild.kill).toHaveBeenCalled()
+  })
+
+  test('logs stderr output when logger is set', async () => {
+    const mockConsoleError = jest.spyOn(console, 'error').mockImplementation()
+    const mockLogger = jest.fn()
+    const mockStderr = new EventEmitter()
+    const mockChild = { exitCode: null, kill: jest.fn(), stderr: mockStderr } as unknown as ChildProcess
+    mockSpawn.mockReturnValue(mockChild)
+    server = createServer()
+    await new Promise<void>((resolve) => server.listen(port, '127.0.0.1', resolve))
+    setLogger(mockLogger)
+
+    const startPromise = startBackend()
+    mockStderr.emit('data', Buffer.from('error message'))
+    await startPromise
+
+    expect(mockLogger).toHaveBeenCalledTimes(1)
+    expect(mockLogger).toHaveBeenCalledWith('error message')
+    expect(mockConsoleError).toHaveBeenCalledTimes(0)
+    setLogger(undefined)
+
+    mockStderr.emit('data', Buffer.from('another message'))
+    expect(mockLogger).toHaveBeenCalledTimes(1)
+    expect(mockConsoleError).toHaveBeenCalledTimes(1)
+
+    mockConsoleError.mockRestore()
+  })
+
+  test('logs stderr to console.error when no logger is set', async () => {
+    const mockConsoleError = jest.spyOn(console, 'error').mockImplementation()
+    const mockStderr = new EventEmitter()
+    const mockChild = { exitCode: null, kill: jest.fn(), stderr: mockStderr } as unknown as ChildProcess
+    mockSpawn.mockReturnValue(mockChild)
+    server = createServer()
+    await new Promise<void>((resolve) => server.listen(port, '127.0.0.1', resolve))
+
+    const startPromise = startBackend()
+    const errorData = Buffer.from('error message')
+    mockStderr.emit('data', errorData)
+    await startPromise
+
+    expect(mockConsoleError).toHaveBeenCalledWith(errorData)
+    mockConsoleError.mockRestore()
   })
 })
 
