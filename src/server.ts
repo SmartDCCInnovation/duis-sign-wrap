@@ -25,6 +25,10 @@ const jarFile = resolve(__dirname, 'tool.jar')
 export const port = Math.round(Math.random() * 16384) + 32768
 
 let child: ChildProcess | undefined
+let logger: ((msg: string) => void) | undefined
+export function setLogger(f?: (msg: string) => void) {
+  logger = f
+}
 
 export async function startBackend(): Promise<void> {
   if (child !== undefined && child.exitCode === null) {
@@ -42,9 +46,17 @@ export async function startBackend(): Promise<void> {
       port.toString(10),
     ],
     {
-      stdio: ['ignore', 'inherit', 'inherit'],
+      stdio: ['ignore', 'inherit', 'pipe'],
     },
   )
+
+  child.stderr?.on('data', (data) => {
+    if (logger) {
+      logger(data.toString())
+    } else {
+      console.error(data)
+    }
+  })
 
   let ctr = 0
   do {

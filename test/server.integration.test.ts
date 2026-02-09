@@ -1,4 +1,4 @@
-import { stopBackend } from '../src/server'
+import { setLogger, stopBackend } from '../src/server'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { spawn, SpawnOptionsWithoutStdio } from 'node:child_process'
@@ -10,6 +10,7 @@ const originalSpawn = spawn
 
 describe('makeSignDuisRequest integration', () => {
   let jarFile: string
+  let consoleErrorSpy: jest.SpyInstance
 
   beforeAll(() => {
     const paths = globSync('dccboxed-signing-tool/target/xmldsig-2*.jar')
@@ -22,6 +23,16 @@ describe('makeSignDuisRequest integration', () => {
       const updatedArgs = (args as string[])?.map(arg => arg.includes('tool.jar') ? jarFile : arg)
       return originalSpawn(cmd as string, updatedArgs, options as SpawnOptionsWithoutStdio | undefined)
     })
+  })
+
+  beforeEach(() => {
+    setLogger(undefined)
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+  })
+
+  afterEach(() => {
+    setLogger(() => {})
+    consoleErrorSpy.mockRestore()
   })
 
   afterAll(() => {
@@ -38,5 +49,6 @@ describe('makeSignDuisRequest integration', () => {
 
     expect(result).toContain('<ds:Signature')
     expect(result).toContain('</ds:Signature>')
+    expect(consoleErrorSpy).toHaveBeenCalled()
   }, 10000)
 })
